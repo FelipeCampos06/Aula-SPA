@@ -132,8 +132,13 @@ function renderTasks(list) {
 
                 show(app);
                 await fetchTasks();
-
             });
+
+            btnLogout.addEventListener('click', async() =>{
+                await fetch('/logout', {method: 'POST'});
+                show('login');
+            });
+
         });
     });
 }
