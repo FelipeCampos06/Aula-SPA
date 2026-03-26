@@ -1,26 +1,19 @@
-const { json } = require("body-parser");
-
 function show(panel) {
-
-    document.getElementById('loginPanel').style.display = panel == 'login' ? 'block' : 'none';
-    document.getElementById('appPanel').style.display = panel == 'app' ? 'block' : 'none';
-
+    document.getElementById('loginPanel').style.display = panel === 'login' ? 'block' : 'none';
+    document.getElementById('appPanel').style.display = panel === 'app' ? 'block' : 'none';
 }
 
-// função para mostrar tarefas
+//funcao para mostrar as tarefas
 function renderTasks(list) {
-
-    const ul = document.getElementById('tasklist');
-
+    const ul = document.getElementById('taskList');
     ul.innerHTML = '';
 
-    list.array.forEach(element => {
-
+    list.forEach(t => {
         const li = document.createElement('li');
 
         const title = document.createElement('span');
         title.className = 'task-title';
-        title.textContent = title.title;
+        title.textContent = t.title;
 
         const cb = document.createElement('input');
         cb.className = 'checkBox';
@@ -28,78 +21,59 @@ function renderTasks(list) {
         cb.checked = !t.completed;
 
         cb.addEventListener('change', async () => {
-
             await fetch(`/tasks/${t.id}`, {
                 method: 'PUT',
                 headers: { 'Content-type': 'application/json' },
                 body: JSON.stringify({ completed: cb.checked })
             });
-
             await fetchTasks();
-
         });
-
         const del = document.createElement('button');
         del.textContent = 'Excluir';
         del.style.width = 'auto';
         del.style.marginTop = '0';
         del.style.padding = '8px 10px';
         del.addEventListener('click', async () => {
-
-            await fetch(`/tasks/${t.id}`, {
-                method: 'DELETE'
-
-            });
-
+            await fetch(`/tasks/${t.id}`,
+                { method: 'DELETE' });
             await fetchTasks();
-
         });
 
-
         const actions = document.createElement('span');
-
         actions.className = 'task-cta';
-
         actions.appendChild(cb);
         actions.appendChild(del);
-
         li.appendChild(title);
         li.appendChild(actions);
-
         ul.appendChild(li);
-
     });
-
-    async function fetchTasks() {
-
-        const res = await fetch('/tasks');
-
-        if (res.status === 401) {
-            show('login');
-            return;
-        }
-
-        const data = await res.json();
-        renderTasks(data);
-
-    }
-
 }
 
-async function chekAuthAndInit() {
+async function fetchTasks() {
+    const res = await fetch('/tasks');
+
+    if (res.status === 401) {
+        show('login');
+        return;
+    }
+
+    const data = await res.json();
+    renderTasks(data);
+}
+
+async function checkAuthAndInit() {
     const me = await fetch('/me');
 
     if (me.ok) {
-
         show('app');
         await fetchTasks();
-
     } else {
         show('login');
     }
 }
 
-// para quando carregar o html
+//listener para quando
+//carregar o html
 document.addEventListener('DOMContentLoaded', async () => {
 
     const btnLogin = document.getElementById('btnLogin');
@@ -125,7 +99,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         if (!res.ok) {
-
             loginMsg.textContent = 'Credenciais Inválidas';
             loginMsg.style.display = 'block';
             return;
@@ -141,16 +114,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     btnAdd.addEventListener('click', async () => {
-        const title = (newTask, value || '').trim();
+        const title = (newTask.value || '').trim();
 
-        if (!title)
-            return;
+        if (!title) return;
 
         const res = await fetch('/tasks', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ title, completed: false })
-
         });
 
         if (res.status === 401) {
@@ -160,9 +131,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         newTask.value = '';
         await fetchTasks();
-
     });
 
+
     await checkAuthAndInit();
-    
 });
