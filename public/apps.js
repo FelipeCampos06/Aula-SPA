@@ -41,6 +41,19 @@ function renderTasks(list) {
         del.addEventListener('click', async () => {
             await fetch(`/tasks/${t.id}`,
                 { method: 'DELETE' });
+
+            //Confirmação antes de excluir
+            const del = confirm("Você deseja excluir a tarefa?");
+
+            if (del) {
+                alert("Ação confirmada!");
+
+            } else {
+                alert("Ação cancelada.");
+                //retorna o default e cancela tudo
+                return preventDefault();
+            }
+
             await fetchTasks();
         });
 
@@ -64,7 +77,6 @@ function renderTasks(list) {
             await fetchTasks();
         });
 
-
         const actions = document.createElement('span');
         actions.className = 'task-cta';
         actions.appendChild(cb);
@@ -85,9 +97,40 @@ async function fetchTasks() {
     }
 
     const data = await res.json();
-    renderTasks(data);
+    tasksCache = data; // salva todas as tarefas
+    renderTasks(tasksCache);
 }
 
+document.addEventListener('DOMContentLoaded', async () => {
+    const btntodas = document.getElementById('btntodas');
+    
+    btntodas.addEventListener('click', () => {
+        renderTasks(tasksCache);
+    });
+
+});
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const btnconcluidas = document.getElementById('btnconcluidas');
+
+    btnconcluidas.addEventListener('click', () => {
+        // filtra tarefas concluídas
+        const btnconcluidas = tasksCache.filter(t => t.completed);
+        renderTasks(btnconcluidas);
+    });
+
+});
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const btnpendentes = document.getElementById('btnpendentes');
+
+    btnpendentes.addEventListener('click', () => {
+        // filtra tarefas concluídas
+        const btnpendentes = tasksCache.filter(t => !t.completed);
+        renderTasks(btnpendentes);
+    });
+
+});
 async function checkAuthAndInit() {
     const me = await fetch('/me');
 

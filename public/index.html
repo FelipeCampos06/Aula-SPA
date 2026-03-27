@@ -38,13 +38,18 @@
     <section id="appPanel" class="card" style="display:none;">
       <header class="app-header">
         <h2 class="app-title">Minhas Tarefas</h2>
+
+        <div style="justify-content: space-between;">
+        <button id="btntodas" style="width:auto;margin-top:0;padding:10px 12px;">Todas</button>
+        <button id="btnpendentes" style="width:auto;margin-top:0;padding:10px 12px;">Pendentes</button>
+        <button id="btnconcluidas" style="width:auto;margin-top:0;padding:10px 12px;">Concluídas</button>
         <button id="btnLogout" style="width:auto;margin-top:0;padding:10px 12px;">Sair</button>
+        </div>
       </header>
 
       <div style="display:flex;gap:10px;align-items:center;">
         <input id="newTask" class="input-mini" placeholder="Nova tarefa">
         <button id="btnAdd" style="margin-top:0;">Adicionar</button>
-        <input type="text" id="taskFilter" placeholder="Filtrar tarefas...">
       </div>
 
       <ul id="taskList" style="margin-top:12px;"></ul>

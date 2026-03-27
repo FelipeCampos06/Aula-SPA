@@ -157,7 +157,6 @@ app.delete('/tasks/:id', requireAuth, (req, res) => {
   res.json(removed);
 
 });
-//até aqui pronto ultima aula
 
 //rota para comando desconhecido
 app.get('*', (req, res) => {
