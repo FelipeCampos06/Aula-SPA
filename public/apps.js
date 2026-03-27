@@ -8,6 +8,9 @@ function renderTasks(list) {
     const ul = document.getElementById('taskList');
     ul.innerHTML = '';
 
+    // Ordem alfabética
+    list.sort((a, b) => a.title.localeCompare(b.title));
+
     list.forEach(t => {
         const li = document.createElement('li');
 
@@ -18,7 +21,7 @@ function renderTasks(list) {
         const cb = document.createElement('input');
         cb.className = 'checkBox';
         cb.type = 'checkBox';
-        cb.checked = !t.completed;
+        cb.checked = !!t.completed;
 
         cb.addEventListener('change', async () => {
             await fetch(`/tasks/${t.id}`, {
@@ -28,21 +31,45 @@ function renderTasks(list) {
             });
             await fetchTasks();
         });
+
         const del = document.createElement('button');
         del.textContent = 'Excluir';
         del.style.width = 'auto';
         del.style.marginTop = '0';
         del.style.padding = '8px 10px';
+
         del.addEventListener('click', async () => {
             await fetch(`/tasks/${t.id}`,
                 { method: 'DELETE' });
             await fetchTasks();
         });
 
+        const edit = document.createElement('button');
+        edit.textContent = 'Editar';
+        edit.style.width = 'auto';
+        edit.style.marginTop = '0';
+        edit.style.padding = '8px 10px';
+
+        edit.addEventListener('click', async () => {
+            const editar = prompt('Editar', t.title);
+
+            await fetch(`/tasks/${t.id}`,
+                {
+                    method: 'PUT',
+                    headers: { 'Content-type': 'application/json' },
+                    body: JSON.stringify({ title: editar })
+
+                });
+
+            await fetchTasks();
+        });
+
+
         const actions = document.createElement('span');
         actions.className = 'task-cta';
         actions.appendChild(cb);
         actions.appendChild(del);
+        actions.appendChild(edit);
         li.appendChild(title);
         li.appendChild(actions);
         ul.appendChild(li);
@@ -104,7 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        show(app);
+        show('app');
         await fetchTasks();
     });
 

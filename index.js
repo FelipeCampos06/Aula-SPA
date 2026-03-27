@@ -135,6 +135,9 @@ app.put('/tasks/:id', requireAuth, (req, res) => {
   if (title !== undefined)
     t.title = title;
 
+  if (completed !== undefined) 
+    t.completed = !!completed;
+
   writeJson(tasksFile, tasks);
   res.json(t);
 });
